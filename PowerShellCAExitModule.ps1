@@ -16,7 +16,7 @@
         @{
             WorkingDirectory = "$PWD"
             Execute  = 'C:\Windows\system32\WindowsPowerShell\v1.0\powershell.exe'
-            Argument = '-NoProfile -File .\PowerShellCAExitModule.ps1 -RequestId "$(RequestId)" -SerialNumber "$(CertificateSerialNumber)"'
+            Argument = '-NoProfile -File .\PowerShellCAExitModule.ps1 -RequestId "$(RequestId)" -SerialNumber "$(SerialNumber)"'
         } | ForEach-Object {
             New-ScheduledTaskAction @_
         }
@@ -24,12 +24,26 @@
         @(
             @{
                 Enabled = $true
-                Subscription = '<QueryList><Query Id="0" Path="Security"><Select Path="Security">*[System[EventID=4870]] or *[System[EventID=4887]] or *[System[EventID=4889]]</Select></Query></QueryList>'
-                ValueQueries = @{
+                Subscription =
+@"
+<QueryList>
+    <Query Id="0" Path="Security">
+        <Select Path="Security">
+            *[System[EventID=4870]] or
+            *[System[EventID=4887]] or
+            *[System[EventID=4889]]
+        </Select>
+    </Query>
+</QueryList>
+"@
+                ValueQueries =
+                @{
                     RequestId = 'Event/EventData/Data[@Name="RequestId"]'
-                    CertificateSerialNumber = 'Event/EventData/Data[@Name="CertificateSerialNumber"]'
-                }.GetEnumerator() | ForEach-Object { $_2 = $_; New-CimInstance -CimClass (
-                        Get-CimClass -ClassName MSFT_TaskNamedValue -Namespace Root/Microsoft/Windows/TaskScheduler
+                    SerialNumber = 'Event/EventData/Data[@Name="CertificateSerialNumber"]'
+                }.GetEnumerator() | ForEach-Object { $_2 = $_;
+                    New-CimInstance -CimClass (
+                        Get-CimClass -ClassName MSFT_TaskNamedValue `
+                                     -Namespace Root/Microsoft/Windows/TaskScheduler
                     ) -ClientOnly | ForEach-Object {
                         $_.Name  = $_2.Name
                         $_.Value = $_2.Value
@@ -37,8 +51,10 @@
                     }
                 }
             }
-        ) | ForEach-Object { $_2 = $_; New-CimInstance -CimClass (
-                Get-CimClass -ClassName MSFT_TaskEventTrigger -Namespace Root/Microsoft/Windows/TaskScheduler
+        ) | ForEach-Object { $_2 = $_;
+            New-CimInstance -CimClass (
+                Get-CimClass -ClassName MSFT_TaskEventTrigger `
+                             -Namespace Root/Microsoft/Windows/TaskScheduler
             ) -ClientOnly | ForEach-Object {
                 $_.Enabled      = $_2.Enabled
                 $_.Subscription = $_2.Subscription
@@ -136,7 +152,7 @@ try
         # Itterate members
         foreach ($Member in $RequestMembers)
         {
-            # Check if not empty member
+            # Check if not empty
             if ($Request.($Member.Name))
             {
                 # Get value
@@ -145,7 +161,7 @@ try
                 # Check member type
                 switch ($Request.($Member.Name).GetType())
                 {
-                    # Set string or datetime property, add pem tags and trim end
+                    # Set string or datetime property, add pem tags or trim end
                     {$_ -in @([System.String],
                               [System.DateTime])}
                     {
@@ -169,7 +185,7 @@ try
                         $Properties += @{ $Member.Name = "'$Value'" }
                     }
 
-                    # Set int property
+                    # Set integer property
                     {$_ -eq [System.Int32]}
                     {
                         $Properties += @{ $Member.Name = $Value }
@@ -366,9 +382,9 @@ COMMIT TRANSACTION;
         Write-Output -InputObject $Query
     }
 
-    #######
-    # Main
-    #######
+    ###########
+    # Requests
+    ###########
 
     if ($RequestId)
     {
