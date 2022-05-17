@@ -1,0 +1,75 @@
+USE [ExitModule]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[CertificateRequests](
+    [RequestID] [int] NULL,
+    [RawRequest] [nvarchar](max) NULL,
+    [RawArchivedKey] [nvarchar](max) NULL,
+    [KeyRecoveryHashes] [nvarchar](max) NULL,
+    [RawOldCertificate] [nvarchar](max) NULL,
+    [RequestAttributes] [nvarchar](max) NULL,
+    [RequestType] [int] NULL,
+    [RequestFlags] [int] NULL,
+    [StatusCode] [int] NULL,
+    [Disposition] [int] NULL,
+    [DispositionEnum] [nvarchar](max) NULL,
+    [DispositionMessage] [nvarchar](max) NULL,
+    [SubmittedWhen] [nvarchar](max) NULL,
+    [ResolvedWhen] [nvarchar](max) NULL,
+    [RevokedWhen] [nvarchar](max) NULL,
+    [RevokedEffectiveWhen] [nvarchar](max) NULL,
+    [RevokedReason] [nvarchar](max) NULL,
+    [RequesterName] [nvarchar](max) NULL,
+    [CallerName] [nvarchar](max) NULL,
+    [SignerPolicies] [nvarchar](max) NULL,
+    [SignerApplicationPolicies] [nvarchar](max) NULL,
+    [Officer] [nvarchar](max) NULL,
+    [AttestationChallenge] [nvarchar](max) NULL,
+    [EndorsementKeyHash] [nvarchar](max) NULL,
+    [EndorsementCertificateHash] [nvarchar](max) NULL,
+    [RawPrecertificate] [nvarchar](max) NULL,
+    [RawCertificate] [nvarchar](max) NULL,
+    [CertificateHash] [nvarchar](max) NULL,
+    [CertificateTemplate] [nvarchar](max) NULL,
+    [CertificateTemplateFriendlyName] [nvarchar](max) NULL,
+    [EnrollmentFlags] [int] NULL,
+    [GeneralFlags] [int] NULL,
+    [PrivatekeyFlags] [int] NULL,
+    [SerialNumber] [nvarchar](max) NULL,
+    [IssuerNameID] [int] NULL,
+    [NotBefore] [nvarchar](max) NULL,
+    [NotAfter] [nvarchar](max) NULL,
+    [SubjectKeyIdentifier] [nvarchar](max) NULL,
+    [RawPublicKey] [nvarchar](max) NULL,
+    [PublicKeyLength] [int] NULL,
+    [PublicKeyAlgorithm] [nvarchar](max) NULL,
+    [RawPublicKeyAlgorithmParameters] [nvarchar](max) NULL,
+    [PublishExpiredCertInCRL] [int] NULL,
+    [UPN] [nvarchar](max) NULL,
+    [DistinguishedName] [nvarchar](max) NULL,
+    [RawName] [nvarchar](max) NULL,
+    [Country] [nvarchar](max) NULL,
+    [Organization] [nvarchar](max) NULL,
+    [OrgUnit] [nvarchar](max) NULL,
+    [CommonName] [nvarchar](max) NULL,
+    [Locality] [nvarchar](max) NULL,
+    [State] [nvarchar](max) NULL,
+    [Title] [nvarchar](max) NULL,
+    [GivenName] [nvarchar](max) NULL,
+    [Initials] [nvarchar](max) NULL,
+    [SurName] [nvarchar](max) NULL,
+    [DomainComponent] [nvarchar](max) NULL,
+    [EMail] [nvarchar](max) NULL,
+    [StreetAddress] [nvarchar](max) NULL,
+    [UnstructuredName] [nvarchar](max) NULL,
+    [UnstructuredAddress] [nvarchar](max) NULL,
+    [DeviceSerialNumber] [nvarchar](max) NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
