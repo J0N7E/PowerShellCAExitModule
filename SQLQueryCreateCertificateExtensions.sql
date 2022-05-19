@@ -15,4 +15,3 @@ CREATE TABLE [dbo].[CertificateExtensions](
     [ExtensionFlags] [int] NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-

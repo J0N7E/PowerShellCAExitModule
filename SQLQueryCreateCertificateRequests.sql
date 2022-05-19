@@ -72,4 +72,3 @@ CREATE TABLE [dbo].[CertificateRequests](
     [DeviceSerialNumber] [nvarchar](max) NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-
