@@ -64,7 +64,8 @@
             }
         }
         Principal   = New-ScheduledTaskPrincipal -UserId 'NT AUTHORITY\SYSTEM' -LogonType ServiceAccount
-        Settings    = New-ScheduledTaskSettingsSet
+        Settings    = New-ScheduledTaskSettingsSet -MultipleInstances Parallel `
+                                                   -ExecutionTimeLimit (New-TimeSpan -Minutes 2)
     } | ForEach-Object {
         Register-ScheduledTask @_
     }
@@ -467,7 +468,7 @@ catch [Exception]
                    -Source "PowerShell CA ExitModule" `
                    -EntryType Error `
                    -EventId 1234 `
-                   -Message $_ `
+                   -Message "$_`n`nRequestId: $($Properties.RequestID)" `
                    -Category 0
     throw $_
 }
@@ -476,8 +477,8 @@ catch [Exception]
 # SIG # Begin signature block
 # MIIZBgYJKoZIhvcNAQcCoIIY9zCCGPMCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUhkvPyfnhmzfQNbLo9Qp+9DZV
-# IkWgghKHMIIFBzCCAu+gAwIBAgIQJTSMe3EEUZZAAWO1zNUfWTANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU4o9W2wvIuqcDC40OwP5iZM1p
+# UNygghKHMIIFBzCCAu+gAwIBAgIQJTSMe3EEUZZAAWO1zNUfWTANBgkqhkiG9w0B
 # AQsFADAQMQ4wDAYDVQQDDAVKME43RTAeFw0yMTA2MDcxMjUwMzZaFw0yMzA2MDcx
 # MzAwMzNaMBAxDjAMBgNVBAMMBUowTjdFMIICIjANBgkqhkiG9w0BAQEFAAOCAg8A
 # MIICCgKCAgEAzdFz3tD9N0VebymwxbB7s+YMLFKK9LlPcOyyFbAoRnYKVuF7Q6Zi
@@ -579,33 +580,33 @@ catch [Exception]
 # 6TCCBeUCAQEwJDAQMQ4wDAYDVQQDDAVKME43RQIQJTSMe3EEUZZAAWO1zNUfWTAJ
 # BgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0B
 # CQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAj
-# BgkqhkiG9w0BCQQxFgQUWccxN61pz/uHmBvY0SiI2+l/seUwDQYJKoZIhvcNAQEB
-# BQAEggIAUKy9aC3z2IJ3USu+g0zGkbKuXFw8bP+WRGAI3McreUUnOchutKIqgIbT
-# St29Zb4cqUujp5fn2bxTwZIvj5M3JbnpAK/3FL2c9lONpQeB4aPTc7D9zNTVxQhq
-# tNx9E9zJTLK5nIGYn4hBnJR2VlDTxluhOIMTYKhNtAxcjvGk04GpSleYG3MTOHJ1
-# xjBktaa5wHqrn/IKazKlEdJBavFFXKQdZERnln/bG2+gSvtdcz0n+ylO2Lqg2Szs
-# x2OjevK6AY7vi5TfGRlZ+Y4kES0f1PmqZzIuO74Aiskwj5pzAojyP6B4LpP6nWgY
-# hDgvXH/8m6O+l2DfGuzeMFwa6a8IC9bZk2o2JwS2wJP9cOQ0NejDdfwBIfB68idz
-# PrGMZjCmoovNutYCsM8ykehsw5+n73MQfCzj3Uq7MIbgXSTZzKyVXtBxwS1n+ULa
-# qxn1+bnjYwyv9LxWj8tUl0jI2vx12Nu+2R3Qxc4yY1Xmw394SySOsQgXTWlR40aT
-# 5GmR2tNEEAePYjax9BkpG2RWDyOC5uE/kDgeQR42WEySbya5WMNaIwzJF6pGhsKN
-# llwnFqART32O04SMolVMDp7ltZ21xM4Hd5UKx5qCXcHx3cFwHBCg43sni/p7Idbi
-# DNiSahRu6pYpUxecCvBEXiwCQflwlWxesowYUWixdzhrSeY7MY6hggMgMIIDHAYJ
+# BgkqhkiG9w0BCQQxFgQUqmfaNlp1dr3KsZvZy2U1T2skKoQwDQYJKoZIhvcNAQEB
+# BQAEggIAsPcRCuY9OqOFbrR8vOTJmEYyEcO/lSKrJG5pVlMZl/KkNxkjjnHTkL6u
+# w4WhUGRf5qEIyDK1a76B5FxmuyHNoouMlqzvalgfI0Y9vY0atMavT4FWLajeKfmP
+# ezF8PinVqnPfEUPOt+Ns6y0mJGIBqfS8B9Kz0V8Hmx2a0iRs0FWztUU2Vt316NWf
+# QL446XzIo7ALOV1vzBMXzsFvMfb2eei5wBxSJlYwnLdmKduI0XUg8NquFmFvPDMQ
+# oZY9B6RWs9EPNaSAkpnzUm/PsWSC7ijkKeANnDInHhfsx9D6pBX0QEoq0YSbpMuU
+# GNnZQzXntIICGI4rBDmIw8sLu+lCFRktD8gDQW6xgHoQfSlHXo/Ecx1YuHcQsf6o
+# tvZT7mxmm+anSzPXqEmjVgrUgAuCWAiIaDtVStQYbtS0coscA0mAXFwP4LWZZW4V
+# pu8CaWd213wT+CqcmEipjiFty9yBYkx5daFk7c5sztic1FlAcLAKpm/W4syhb/Zj
+# h/jYcIY42G6Wif1nJmT+1yMCqgfY0cSFe/IG8/t0MAz9lYPAb9VdeWtKtsH3N832
+# Kxo9YU/SOwHZz1gnj/qbLHZ+p4Tf7I58EHYBu8eRQ02PpBpCQ39zplArZEzAZv/p
+# ApDq+rD+DZ7K+CcPNXtgX6Nm62dFh9Oo6UEVx5XXBblYjXklpv6hggMgMIIDHAYJ
 # KoZIhvcNAQkGMYIDDTCCAwkCAQEwdzBjMQswCQYDVQQGEwJVUzEXMBUGA1UEChMO
 # RGlnaUNlcnQsIEluYy4xOzA5BgNVBAMTMkRpZ2lDZXJ0IFRydXN0ZWQgRzQgUlNB
 # NDA5NiBTSEEyNTYgVGltZVN0YW1waW5nIENBAhAKekqInsmZQpAGYzhNhpedMA0G
 # CWCGSAFlAwQCAQUAoGkwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-# 9w0BCQUxDxcNMjIwNTE5MTcwMDA0WjAvBgkqhkiG9w0BCQQxIgQgI4GeiQ9+m1Id
-# 0MjqbtdyYV2WYdpbEERXLPx00iBnG8UwDQYJKoZIhvcNAQEBBQAEggIATsjXBBXl
-# ygk13UXmoHBcEWbu93+WC1Ga1iSkqdgTBTeWrKRRrFq1X0TTNBAYT3Br82oSXHx/
-# AY8FhNv+rvlOUBilAWX2xK1hQjn4heCCM0UQCd2oUdOT1JHzIfP0NJEs5+NCQ6ef
-# 1fvBwRTySK6ZttYB6g2vQoNAW5EblRZ/venYdpprjFLcgg+mrdbIc3t6o51ulC+e
-# eljrGiyW7Ij6FKJxjfIgWho3OeuxKGmeXU4sLIFwR1CvRieJNx40B5nKD0um2iqO
-# eZ/CAKbfikV78hhVZ0ltUgW0knCuDmCKQIXRIyTf+oH0UgVHCNQbb2RWFZ1g3w+J
-# 3zL1K6aPTaktbXEuD6yv+OJ1uqPbfsRS1HhCc0DQ3JAANifXm2HWjXkUc2KZ3vUx
-# vAQYKbK4qFUB6HxhHFM2aG0tYjBp+hs9JcQmk08d2jlpmQvgHLUIX5GkCub22YBG
-# spRjIPj5b2zyqkpExrx4nglCP3Oa7jKfJLLYuxdTGE6NjuOHZ8rJRtCJzfuJMRRN
-# A32uAQXOd4rqmCKKmc4hLi82jfCUjuXpT5IvrLKPbR9JgMIjLN+XWN2JoxxGNVWb
-# UVA1X12zVGUMcmMK7LLj1XR8dwXLQdgUYzA19x4uv+7J/pDAUPkb8E2Gn3RYX8+t
-# LmCSKrERyS4fBdMRGdIxMnPFYZV4q2sTckQ=
+# 9w0BCQUxDxcNMjIwNTIwMTEwMDA0WjAvBgkqhkiG9w0BCQQxIgQgP9mp9xULdMnh
+# F7//tnosarjJdYp+tnNsBXEzpploRaQwDQYJKoZIhvcNAQEBBQAEggIAB6XPoxGr
+# Ph8enodfbhDv4WR4rvx2+3wIbWsalLgEIehfk+mav/4eDF0pvb9YUUyG2Z2sr0Z0
+# X/VK7OiYv4DKqE8yCYXN8SZ3LSwnB3mEO+8QxmeKoTEajtBgyScHv/U/8yTQNzS9
+# yOmmMe1l631ClKgMZ9/sb+IPuX4wF1OrzyAm03yNrpsWsitQA/c0VUVUfmVMu984
+# dzB4tKnM6X9FI/b6jsIvbUmpg8BA82+0qX87hXtwS3uJbm+Zf/JbKsEqVPiAeSvg
+# rDMTpFXBGygakFXZeZ7QcEaH/sYx/Y441Tdj1s+NG7vTf1JRug0sPccSjaTAn1NO
+# tiqVhgDBUc7tAN4MiDDWx6h5/oiBHttUKDHRvICQI31Mfeb4WE0dOZFFb2YaXkWk
+# XbhPDXtymhUr7/JJaA/FeS03yZK3x8Hx0vLBZzhM2DpY7CyYKVWdQBcQTwkFAQyV
+# i1kSApCcMGYnZzFaG9pSdhYjsp16+HLgy6QzwnwLTTM9twUf2bcm6AfJDlUKKWxf
+# c9feTYOV4R/bnZh+q56RA0d0rF+heuraxiMxyHX0uyeto8O7R9QtbfLuoA6R0AP3
+# wNbcVblciN8u1/qqK9pxdhGdoPVx0cKAOnMm+vr+vNonfe7buUTjzoePKSBgIfHj
+# JaHm82ws5mzr5tLu3wr1e0Azzt5e2dWARe8=
 # SIG # End signature block
